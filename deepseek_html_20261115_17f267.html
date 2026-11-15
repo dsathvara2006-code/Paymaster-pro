@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PyMaster Pro — Learn Python</title>
+<style>
+    :root {
+        --cyan: #22d3ee;
+        --violet: #a78bfa;
+        --emerald: #34d399;
+        --amber: #fbbf24;
+        --rose: #fb7185;
+        --text: #f8fafc;
+        --text-dim: #94a3b8;
+        --text-muted: #64748b;
+        --border: rgba(255, 255, 255, 0.1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0;
+        font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif; }
+
+    html, body { height: 100%; overflow: hidden; }
+
+    body {
+        background: #050810;
+        color: var(--text);
+        font-size: 14px;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .aurora {
+        position: fixed; width: 700px; height: 700px; border-radius: 50%;
+        filter: blur(140px); opacity: 0.35; pointer-events: none; z-index: 0;
+    }
+    .aurora-1 { background: radial-gradient(circle, var(--cyan), transparent 65%);
+        top: -250px; left: -200px; animation: floatA 25s ease-in-out infinite; }
+    .aurora-2 { background: radial-gradient(circle, var(--violet), transparent 65%);
+        bottom: -250px; right: -150px; animation: floatB 30s ease-in-out infinite; }
+    .aurora-3 { background: radial-gradient(circle, var(--emerald), transparent 65%);
+        top: 40%; left: 50%; opacity: 0.22; animation: floatC 35s ease-in-out infinite; }
+    @keyframes floatA { 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(120px,-80px) scale(1.15);} }
+    @keyframes floatB { 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(-100px,100px) scale(1.1);} }
+    @keyframes floatC { 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(-150px,-150px) scale(0.9);} }
+
+    /* ---------- App grid ---------- */
+    .app {
+        position: relative; z-index: 1;
+        display: grid;
+        grid-template-columns: 272px 1fr;
+        gap: 16px;
+        height: 100vh;
+        padding: 16px;
+    }
+
+    .glass {
+        background: rgba(255, 255, 255, 0.04);
+        backdrop-filter: blur(24px) saturate(180%);
+        -webkit-backdrop-filter: blur(24px) saturate(180%);
+        border: 1px solid var(--border);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    /* ---------- Sidebar ---------- */
+    .sidebar {
+        border-radius: 24px; padding: 20px 14px;
+        display: flex; flex-direction: column; gap: 20px; min-height: 0;
+    }
+    .logo {
+        display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+        border-radius: 14px; background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.06);
+    }
+    .logo-icon {
+        width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+        background: linear-gradient(135deg, var(--cyan), var(--violet));
+        display: flex; align-items: center; justify-content: center; font-size: 18px;
+        box-shadow: 0 4px 16px rgba(34,211,238,0.4);
+    }
+    .logo-text {
+        font-weight: 900; font-size: 16px; letter-spacing: -0.3px;
+        background: linear-gradient(135deg, #fff, var(--cyan));
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .logo-badge {
+        font-size: 9px; padding: 3px 7px; margin-left: auto;
+        background: linear-gradient(135deg, var(--amber), var(--rose));
+        color: #000; border-radius: 6px; font-weight: 900; letter-spacing: 0.5px;
+    }
+
+    .nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+    .nav-item {
+        display: flex; align-items: center; gap: 12px;
+        padding: 10px 14px; background: transparent;
+        border: 1px solid transparent; border-radius: 12px;
+        color: var(--text-dim); font-weight: 600; font-size: 13.5px;
+        cursor: pointer; transition: all 0.2s; text-align: left; font-family: inherit;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+    .nav-item.active {
+        background: linear-gradient(135deg, rgba(34,211,238,0.12), rgba(167,139,250,0.12));
+        border-color: rgba(34,211,238,0.25);
+        color: var(--text);
+        box-shadow: 0 4px 20px rgba(34,211,238,0.15), inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+    .nav-icon {
+        width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+        background: rgba(255,255,255,0.05);
+        display: flex; align-items: center; justify-content: center; font-size: 14px;
+        transition: all 0.2s;
+    }
+    .nav-item.active .nav-icon {
+        background: linear-gradient(135deg, var(--cyan), var(--violet));
+        box-shadow: 0 4px 12px rgba(34,211,238,0.35);
+    }
+
+    .stats {
+        display: flex; flex-direction: column; gap: 8px;
+        padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .stat-row { display: flex; gap: 8px; }
+    .stat {
+        flex: 1; padding: 10px 12px;
+        background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 12px; display: flex; align-items: center; gap: 6px;
+        font-size: 12px; font-weight: 700;
+    }
+    .stat .icon { font-size: 13px; }
+    .stat .val { color: var(--text); font-variant-numeric: tabular-nums; }
+
+    .download-btn {
+        padding: 11px 14px;
+        background: linear-gradient(135deg, var(--cyan), var(--violet));
+        color: #030712; border: none; border-radius: 12px;
+        font-weight: 800; font-size: 13px; cursor: pointer;
+        box-shadow: 0 6px 24px rgba(34,211,238,0.35); font-family: inherit;
+    }
+    .download-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 32px rgba(34,211,238,0.5); }
+
+    /* ---------- Content ---------- */
+    .content { border-radius: 24px; overflow: hidden; position: relative; min-height: 0; }
+    .view { display: none; height: 100%; overflow-y: auto; padding: 32px; }
+    .view.active { display: block; animation: viewFadeIn 0.4s ease; }
+    @keyframes viewFadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+
+    .view::-webkit-scrollbar,
+    .code-input::-webkit-scrollbar,
+    .terminal-output::-webkit-scrollbar { width: 8px; height: 8px; }
+    .view::-webkit-scrollbar-thumb,
+    .code-input::-webkit-scrollbar-thumb,
+    .terminal-output::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.1); border-radius: 4px;
+    }
+
+    .view-header {
+        margin-bottom: 24px; display: flex; justify-content: space-between;
+        align-items: flex-end; gap: 20px; flex-wrap: wrap;
+    }
+    .view-header h1 {
+        font-size: 28px; font-weight: 900; letter-spacing: -0.8px;
+        margin-bottom: 6px; line-height: 1.1;
+    }
+    .gradient-text {
+        background: linear-gradient(135deg, var(--cyan), var(--violet));
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .view-header p { color: var(--text-dim); font-size: 13.5px; }
+
+    .glass-card {
+        background: rgba(255,255,255,0.035);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 20px; padding: 22px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06);
+        transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    .glass-card:hover {
+        background: rgba(255,255,255,0.055); border-color: rgba(255,255,255,0.15);
+    }
+
+    /* ---------- Bento ---------- */
+    .bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; }
+    .module-card { grid-column: span 3; position: relative; overflow: hidden; }
+    .module-card.featured { grid-column: span 6; }
+    .module-card::before {
+        content: ''; position: absolute; top: -60%; right: -30%;
+        width: 300px; height: 300px;
+        background: radial-gradient(circle, rgba(34,211,238,0.15), transparent 65%);
+        pointer-events: none; opacity: 0; transition: opacity 0.4s;
+    }
+    .module-card:hover::before { opacity: 1; }
+    .module-card.completed::before {
+        background: radial-gradient(circle, rgba(52,211,153,0.15), transparent 65%); opacity: 0.5;
+    }
+    .module-card.locked { opacity: 0.55; filter: grayscale(0.4); }
+    .module-card.locked::before { opacity: 0 !important; }
+
+    .mod-top {
+        display: flex; justify-content: space-between; align-items: flex-start;
+        gap: 12px; margin-bottom: 12px; position: relative;
+    }
+    .mod-icon {
+        width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center; font-size: 20px;
+        background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    }
+    .module-card.completed .mod-icon {
+        background: linear-gradient(135deg, rgba(52,211,153,0.2), rgba(52,211,153,0.05));
+        border-color: rgba(52,211,153,0.3);
+    }
+    .module-card:not(.locked):not(.completed) .mod-icon {
+        background: linear-gradient(135deg, rgba(34,211,238,0.2), rgba(167,139,250,0.15));
+        border-color: rgba(34,211,238,0.3);
+    }
+    .mod-title {
+        font-size: 15.5px; font-weight: 800; line-height: 1.35;
+        color: var(--text); margin-bottom: 4px; letter-spacing: -0.2px; position: relative;
+    }
+    .module-card.featured .mod-title { font-size: 20px; }
+    .mod-meta { font-size: 11.5px; color: var(--text-muted); font-weight: 600; position: relative; }
+    .mod-desc {
+        color: var(--text-dim); font-size: 13px; line-height: 1.6;
+        margin-bottom: 12px; position: relative;
+    }
+
+    .badge {
+        font-size: 10px; padding: 4px 10px; border-radius: 100px;
+        font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;
+        white-space: nowrap; flex-shrink: 0;
+    }
+    .badge-done { background: rgba(52,211,153,0.15); color: var(--emerald); border: 1px solid rgba(52,211,153,0.3); }
+    .badge-active { background: rgba(34,211,238,0.15); color: var(--cyan); border: 1px solid rgba(34,211,238,0.3); box-shadow: 0 0 20px rgba(34,211,238,0.2); }
+    .badge-lock { background: rgba(100,116,139,0.15); color: var(--text-muted); border: 1px solid rgba(100,116,139,0.3); }
+
+    .topics { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; position: relative; }
+    .topic-tag {
+        padding: 4px 10px; background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.06); border-radius: 100px;
+        font-size: 11px; color: var(--text-dim); font-weight: 600;
+    }
+    .topic-tag:hover {
+        background: rgba(34,211,238,0.1);
+        border-color: rgba(34,211,238,0.3);
+        color: var(--cyan);
+    }
+
+    .progress {
+        height: 6px; background: rgba(0,0,0,0.35); border-radius: 100px;
+        overflow: hidden; position: relative; margin-top: 12px;
+    }
+    .progress-fill {
+        height: 100%; background: linear-gradient(90deg, var(--emerald), var(--cyan));
+        border-radius: 100px; position: relative;
+        transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+        box-shadow: 0 0 12px rgba(52,211,153,0.5);
+    }
+    .progress-fill::after {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        animation: shimmer 2s infinite;
+    }
+    @keyframes shimmer { 0%{transform:translateX(-100%);} 100%{transform:translateX(100%);} }
+
+    .mod-footer {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-top: 12px; gap: 12px; flex-wrap: wrap; position: relative;
+    }
+    .mod-progress-text { font-size: 11.5px; color: var(--text-muted); font-weight: 600; }
+    .btn-pill {
+        padding: 6px 14px;
+        background: linear-gradient(135deg, var(--cyan), var(--violet));
+        color: #030712; border: none; border-radius: 100px;
+        font-weight: 800; font-size: 11.5px; cursor: pointer; font-family: inherit;
+        box-shadow: 0 4px 16px rgba(34,211,238,0.3);
+    }
+    .btn-pill:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(34,211,238,0.5); }
+
+    /* ---------- Level orbs ---------- */
+    .level-grid {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+        gap: 12px; margin-top: 8px;
+    }
+    .level-orb {
+        width: 72px; height: 72px; border-radius: 50%;
+        background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
+        backdrop-filter: blur(12px);
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        font-family: inherit; font-weight: 800; font-size: 15px;
+        cursor: pointer; transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+        color: var(--text);
+    }
+    .level-orb:hover { transform: scale(1.08); border-color: rgba(255,255,255,0.25); }
+    .level-orb .sub {
+        font-size: 8.5px; font-weight: 700; letter-spacing: 0.4px;
+        text-transform: uppercase; opacity: 0.85; margin-top: 2px;
+    }
+    .level-orb.done {
+        background: linear-gradient(135deg, rgba(52,211,153,0.25), rgba(52,211,153,0.08));
+        border-color: rgba(52,211,153,0.5); color: #d1fae5;
+        box-shadow: 0 0 24px rgba(52,211,153,0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+    }
+    .level-orb.current {
+        background: linear-gradient(135deg, rgba(34,211,238,0.35), rgba(34,211,238,0.1));
+        border-color: rgba(34,211,238,0.7); color: #cffafe;
+        animation: orbPulse 2.5s ease-in-out infinite;
+    }
+    @keyframes orbPulse {
+        0%,100% { box-shadow: 0 0 32px rgba(34,211,238,0.4), 0 0 0 0 rgba(34,211,238,0.4), inset 0 1px 0 rgba(255,255,255,0.2); }
+        50% { box-shadow: 0 0 40px rgba(34,211,238,0.6), 0 0 0 12px rgba(34,211,238,0), inset 0 1px 0 rgba(255,255,255,0.2); }
+    }
+    .level-orb.boss {
+        background: linear-gradient(135deg, rgba(167,139,250,0.4), rgba(167,139,250,0.1));
+        border-color: rgba(167,139,250,0.6); color: #ede9fe;
+        box-shadow: 0 0 28px rgba(167,139,250,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+    }
+    .level-orb.boss.current { animation: bossPulse 2s ease-in-out infinite; }
+    @keyframes bossPulse {
+        0%,100% { box-shadow: 0 0 28px rgba(167,139,250,0.5), 0 0 0 0 rgba(167,139,250,0.5), inset 0 1px 0 rgba(255,255,255,0.2); }
+        50% { box-shadow: 0 0 40px rgba(167,139,250,0.7), 0 0 0 14px rgba(167,139,250,0), inset 0 1px 0 rgba(255,255,255,0.2); }
+    }
+    .level-orb.locked {
+        opacity: 0.4; cursor: not-allowed; color: var(--text-muted);
+    }
+    .level-orb.locked:hover { transform: none; border-color: rgba(255,255,255,0.1); }
+
+    select {
+        background: rgba(255,255,255,0.05); color: var(--text);
+        padding: 10px 16px; border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.1);
+        font-weight: 600; font-size: 13px; cursor: pointer; outline: none;
+        font-family: inherit; backdrop-filter: blur(12px);
+    }
+    select:hover { border-color: rgba(34,211,238,0.4); }
+    select:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(34,211,238,0.15); }
+
+    /* ---------- Play ---------- */
+    .play-header { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+    .play-badge {
+        font-size: 10.5px; padding: 5px 12px; border-radius: 100px;
+        font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;
+        background: rgba(34,211,238,0.15); color: var(--cyan); border: 1px solid rgba(34,211,238,0.3);
+    }
+    .play-type { font-size: 11.5px; color: var(--amber); font-weight: 800; letter-spacing: 0.3px; }
+    .play-title {
+        font-size: 26px; font-weight: 900; letter-spacing: -0.6px;
+        margin-bottom: 24px; line-height: 1.2;
+        background: linear-gradient(135deg, #fff, #cbd5e1);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .play-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .play-side { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+    .lesson-card { line-height: 1.7; color: #cbd5e1; font-size: 14px; }
+    .lesson-card code, .task-card code {
+        background: rgba(34,211,238,0.1); color: #67e8f9;
+        padding: 2px 7px; border-radius: 5px;
+        font-family: 'SF Mono', 'Courier New', monospace;
+        font-size: 0.92em; font-weight: 600;
+        border: 1px solid rgba(34,211,238,0.2);
+    }
+    .lesson-card b, .task-card b { color: #e2e8f0; font-weight: 700; }
+    .code-example {
+        background: rgba(2,6,23,0.6); color: #4ade80;
+        padding: 12px 14px; border-radius: 10px;
+        font-family: 'SF Mono', 'Courier New', monospace;
+        margin: 12px 0; border: 1px solid rgba(74,222,128,0.15);
+        white-space: pre-wrap; font-size: 13px; line-height: 1.6;
+    }
+    .logic-card {
+        background: linear-gradient(135deg, rgba(129,140,248,0.12), rgba(167,139,250,0.06));
+        border-color: rgba(129,140,248,0.25);
+        font-size: 13px; line-height: 1.65; color: #e0e7ff;
+    }
+    .logic-card code {
+        background: rgba(129,140,248,0.2); color: #c7d2fe;
+        border-color: rgba(129,140,248,0.35);
+    }
+    .task-card { display: flex; flex-direction: column; gap: 14px; }
+    .task-text {
+        font-weight: 600; color: #f1f5f9; font-size: 13.5px; line-height: 1.7;
+        white-space: pre-line;
+    }
+
+    /* ---------- Editor ---------- */
+    .editor {
+        background: rgba(2,6,23,0.85);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px; overflow: hidden;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+    .editor-header {
+        background: rgba(15,23,42,0.9);
+        padding: 10px 14px; font-size: 11.5px; color: var(--text-dim);
+        display: flex; justify-content: space-between;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        font-weight: 700; letter-spacing: 0.3px; gap: 10px; flex-wrap: wrap;
+    }
+    .editor-header b { color: var(--emerald); font-family: 'SF Mono', monospace; }
+    .code-input {
+        width: 100%; min-height: 140px; background: transparent; color: #7dd3fc;
+        border: none; padding: 16px;
+        font-family: 'SF Mono', 'Courier New', monospace;
+        font-size: 14px; resize: vertical; outline: none;
+        line-height: 1.6; caret-color: var(--cyan);
+    }
+    .code-input::placeholder { color: #334155; }
+    .terminal-output {
+        background: rgba(0,0,0,0.4);
+        border-top: 1px solid rgba(255,255,255,0.06);
+        padding: 14px 16px;
+        font-family: 'SF Mono', 'Courier New', monospace;
+        font-size: 13px; color: var(--amber);
+        min-height: 48px; line-height: 1.55;
+        white-space: pre-wrap; overflow-x: auto;
+    }
+
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn {
+        flex: 1; min-width: 130px; padding: 13px 20px;
+        border: none; border-radius: 12px;
+        font-weight: 800; font-size: 13.5px;
+        cursor: pointer; transition: all 0.25s;
+        font-family: inherit; letter-spacing: 0.2px;
+    }
+    .btn-primary {
+        background: linear-gradient(135deg, var(--cyan), var(--violet));
+        color: #030712;
+        box-shadow: 0 6px 24px rgba(34,211,238,0.35);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(34,211,238,0.5); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-secondary {
+        background: rgba(255,255,255,0.06); color: var(--text);
+        border: 1px solid rgba(255,255,255,0.12); flex: 0.5;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
+    #sandbox-code { min-height: 260px; }
+
+    /* ---------- Modal ---------- */
+    #modal {
+        display: none; position: fixed; inset: 0;
+        background: rgba(2,6,23,0.5);
+        backdrop-filter: blur(24px) saturate(180%);
+        -webkit-backdrop-filter: blur(24px) saturate(180%);
+        align-items: center; justify-content: center;
+        z-index: 100; padding: 20px;
+    }
+    #modal.show { display: flex; }
+
+    .modal-card {
+        background: rgba(255,255,255,0.06);
+        backdrop-filter: blur(40px) saturate(180%);
+        -webkit-backdrop-filter: blur(40px) saturate(180%);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 28px; padding: 40px 32px;
+        max-width: 440px; width: 100%; text-align: center;
+        box-shadow: 0 24px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.15), 0 0 120px rgba(34,211,238,0.2);
+        animation: modalPop 0.5s cubic-bezier(0.34,1.56,0.64,1);
+        position: relative; overflow: hidden;
+    }
+    @keyframes modalPop { from{transform:scale(0.85) translateY(20px);opacity:0;} to{transform:scale(1) translateY(0);opacity:1;} }
+    .modal-card::before {
+        content: ''; position: absolute; top: -50%; left: 50%;
+        transform: translateX(-50%); width: 400px; height: 400px;
+        background: radial-gradient(circle, rgba(34,211,238,0.25), transparent 60%);
+        pointer-events: none;
+    }
+    .modal-icon {
+        font-size: 56px; display: block; margin-bottom: 16px;
+        filter: drop-shadow(0 0 24px rgba(34,211,238,0.6));
+        animation: iconBounce 1.5s ease-in-out infinite;
+        position: relative;
+    }
+    @keyframes iconBounce { 0%,100%{transform:translateY(0) scale(1);} 50%{transform:translateY(-8px) scale(1.05);} }
+    .modal-title {
+        font-size: 26px; font-weight: 900; letter-spacing: -0.6px; margin-bottom: 12px;
+        background: linear-gradient(135deg, var(--cyan), var(--violet));
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text; position: relative;
+    }
+    .modal-desc {
+        color: var(--text-dim); font-size: 14px; line-height: 1.6;
+        margin-bottom: 28px; white-space: pre-line; position: relative;
+    }
+
+    /* ---------- Mobile (THE FIX) ---------- */
+    .mobile-topbar, .mobile-nav { display: none; }
+
+    @media (max-width: 900px) {
+        .app {
+            grid-template-columns: 1fr;
+            grid-template-rows: auto 1fr auto;   /* topbar | content | nav */
+            padding: 12px;
+            gap: 10px;
+        }
+        .sidebar { display: none; }
+
+        .mobile-topbar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 16px; border-radius: 20px; gap: 12px;
+        }
+        .mobile-logo {
+            display: flex; align-items: center; gap: 8px;
+            font-weight: 900; font-size: 15px;
+            background: linear-gradient(135deg, #fff, var(--cyan));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .mobile-stats { display: flex; gap: 8px; }
+        .mobile-stats .stat { padding: 6px 10px; font-size: 11px; }
+
+        .mobile-nav {
+            display: flex; padding: 8px; border-radius: 20px; gap: 6px;
+        }
+        .mobile-nav .nav-item {
+            flex: 1; flex-direction: column; padding: 8px 6px; gap: 4px;
+            font-size: 10px; text-align: center;
+            align-items: center; justify-content: center;
+        }
+        .mobile-nav .nav-icon { width: 28px; height: 28px; font-size: 13px; }
+
+        .view { padding: 20px; }
+        .view-header h1 { font-size: 22px; }
+        .play-title { font-size: 20px; }
+        .play-layout { grid-template-columns: 1fr; }
+        .bento { grid-template-columns: 1fr; }
+        .module-card, .module-card.featured { grid-column: span 1; }
+        .level-grid { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 10px; }
+        .level-orb { width: 60px; height: 60px; font-size: 13px; }
+        .level-orb .sub { font-size: 7.5px; }
+        .modal-card { padding: 32px 24px; }
+    }
+</style>
+</head>
+<body>
+
+<div class="aurora aurora-1"></div>
+<div class="aurora aurora-2"></div>
+<div class="aurora aurora-3"></div>
+
+<div class="app">
+
+    <!-- ✅ FIXED: mobile-topbar is now INSIDE .app -->
+    <div class="mobile-topbar glass">
+        <div class="mobile-logo">🐍 PyMaster</div>
+        <div class="mobile-stats">
+            <div class="stat"><span class="icon">❤️</span><span class="val" id="m-hearts">5</span></div>
+            <div class="stat"><span class="icon">⚡</span><span class="val" id="m-xp">0</span></div>
+        </div>
+    </div>
+
+    <aside class="sidebar glass">
+        <div class="logo">
+            <div class="logo-icon">🐍</div>
+            <div class="logo-text">PyMaster</div>
+            <div class="logo-badge">PRO</div>
+        </div>
+        <nav class="nav">
+            <button class="nav-item active" data-tab="syllabus">
+                <span class="nav-icon">📚</span><span>Syllabus</span>
+            </button>
+            <button class="nav-item" data-tab="map">
+                <span class="nav-icon">🎮</span><span>Levels</span>
+            </button>
+            <button class="nav-item" data-tab="play">
+                <span class="nav-icon">✍️</span><span>Arena</span>
+            </button>
+            <button class="nav-item" data-tab="sandbox">
+                <span class="nav-icon">💻</span><span>Lab</span>
+            </button>
+        </nav>
+        <div class="stats">
+            <div class="stat-row">
+                <div class="stat"><span class="icon">❤️</span><span class="val" id="ui-hearts">5</span></div>
+                <div class="stat"><span class="icon">⚡</span><span class="val" id="ui-xp">0</span></div>
+            </div>
+            <div class="stat">
+                <span class="icon">🏆</span>
+                <span class="val">Level <span id="ui-lvl">1</span> / 2000</span>
+            </div>
+            <button class="download-btn" onclick="downloadApp()">📥 Download App</button>
+        </div>
+    </aside>
+
+    <main class="content glass">
+        <div id="view-syllabus" class="view active">
+            <div class="view-header">
+                <div>
+                    <h1>Syllabus <span class="gradient-text">Index</span></h1>
+                    <p>Zero se Advance tak — har module ke end me Boss Test 👹</p>
+                </div>
+            </div>
+            <div id="syllabus-container" class="bento"></div>
+        </div>
+
+        <div id="view-map" class="view">
+            <div class="view-header">
+                <div>
+                    <h1>Level <span class="gradient-text">Map</span></h1>
+                    <p>2000 levels — har 5ve level par Boss Test</p>
+                </div>
+                <select id="page-select" onchange="renderMap(this.value)"></select>
+            </div>
+            <div id="level-grid" class="level-grid"></div>
+        </div>
+
+        <div id="view-play" class="view">
+            <div id="play-content"></div>
+        </div>
+
+        <div id="view-sandbox" class="view">
+            <div class="view-header">
+                <div>
+                    <h1>Free <span class="gradient-text">Code Lab</span></h1>
+                    <p>Yahan kuch bhi try karo — koi pressure nahi</p>
+                </div>
+            </div>
+            <div class="editor">
+                <div class="editor-header">
+                    <span>📄 main.py</span>
+                    <span>Python 3.x Simulator</span>
+                </div>
+                <textarea id="sandbox-code" class="code-input"># Apna Python code yahan likho:
+naam = "Coder"
+score = 100
+print("Hello", naam)
+print("Mera Score:", score * 2)</textarea>
+                <div class="terminal-output" id="sandbox-out">Output yahan dikhega...</div>
+            </div>
+            <button class="btn btn-primary" style="margin-top: 16px; width: 100%;" onclick="runSandbox()">▶️ Run Code</button>
+        </div>
+    </main>
+
+    <!-- mobile nav stays as last child, grid puts it at bottom -->
+    <nav class="mobile-nav glass">
+        <button class="nav-item active" data-tab="syllabus">
+            <span class="nav-icon">📚</span><span>Syllabus</span>
+        </button>
+        <button class="nav-item" data-tab="map">
+            <span class="nav-icon">🎮</span><span>Levels</span>
+        </button>
+        <button class="nav-item" data-tab="play">
+            <span class="nav-icon">✍️</span><span>Arena</span>
+        </button>
+        <button class="nav-item" data-tab="sandbox">
+            <span class="nav-icon">💻</span><span>Lab</span>
+        </button>
+    </nav>
+</div>
+
+<div id="modal">
+    <div class="modal-card">
+        <span class="modal-icon" id="m-icon">🎉</span>
+        <h2 class="modal-title" id="m-title">Shabaash!</h2>
+        <p class="modal-desc" id="m-desc"></p>
+        <button class="btn btn-primary" style="width: 100%;" onclick="closeModal()">Aage Badho →</button>
+    </div>
+</div>
+
+<script>
+const SYLLABUS = [
+    { id: 1, title: "Python Basics & Syntax", range: [1, 5],
+      desc: "Code kaise likhte hain, Print karna, Variables (Dabba) banana aur User se Input lena.",
+      topics: ["print()", "Variables", "Strings vs Numbers", "input()", "👹 BOSS: Basics"] },
+    { id: 2, title: "Maths & Logic Building", range: [6, 10],
+      desc: "Python me calculation karna, Remainder (%) nikalna aur Sahi/Galat (Boolean) ka logic banana.",
+      topics: ["Arithmetic", "Modulus %", "Comparison", "Even/Odd", "👹 BOSS: Logic"] },
+    { id: 3, title: "Control Flow — If / Else", range: [11, 15],
+      desc: "Computer ko sikhana ki agar aisa ho toh kya kare (Conditions lagana).",
+      topics: ["if", "else", "elif", "And/Or", "👹 BOSS: Decision"] },
+    { id: 4, title: "Loops — Kaam Repeat Karwana", range: [16, 20],
+      desc: "1 line ke code se 1000 baar kaam karwana! For loop aur While loop ka jaadu.",
+      topics: ["for", "while", "range()", "break/continue", "👹 BOSS: Loop"] },
+    { id: 5, title: "Data Structures", range: [21, 50],
+      desc: "Ek sath hazaro data ko list aur dictionary me store aur sort karna.",
+      topics: ["Lists []", "Slicing", "append()/pop()", "Dict {k:v}", "Tuples/Sets", "👹 BOSS"] },
+    { id: 6, title: "Functions & Modular Code", range: [51, 100],
+      desc: "Apne khud ke commands/functions banana (def) aur code ko reuse karna.",
+      topics: ["def", "Parameters", "return", "Lambda", "Recursion", "👹 BOSS"] },
+    { id: 7, title: "OOPs — Object Oriented Programming", range: [101, 300],
+      desc: "Badi companies jaise software design karti hain: Classes, Objects aur Inheritance.",
+      topics: ["Class", "__init__", "Inheritance", "Polymorphism", "Encapsulation", "👹 BOSS"] },
+    { id: 8, title: "File Handling & Automation", range: [301, 700],
+      desc: "Text/CSV files banana, Try-Except se crash rokna aur daily kaam automate karna.",
+      topics: ["open()", "try/except", "JSON", "OS", "RegEx", "👹 BOSS"] },
+    { id: 9, title: "Python Power Libraries", range: [701, 1400],
+      desc: "Python ki asli taqat! Data Science, Graphs, Games aur Desktop App banana.",
+      topics: ["NumPy", "Pandas", "Matplotlib", "Tkinter", "Pygame", "👹 BOSS"] },
+    { id: 10, title: "Advance Projects, Web & AI", range: [1401, 2000],
+      desc: "Web Scraping, API banana (Flask/FastAPI), Machine Learning aur 2000 Level Grand Finale!",
+      topics: ["Web Scraping", "APIs", "Flask", "Scikit-Learn", "👑 GRAND BOSS"] }
+];
+
+const MODULE_ICONS = ['📘','🔢','🔀','🔁','📋','🧩','🏛️','📁','📊','🚀'];
+
+const CORE_LEVELS = {
+    1: { mod: "Module 1: Basics", type: "CODE WRITING ✍️", title: "Level 1: Pehla Code Khud Likho",
+        lesson: "Python me screen par kuch bhi dikhane ke liye <code>print()</code> likhte hain. Text ko hamesha double quotes <code>\" \"</code> ke andar rakha jata hai.<div class='code-example'>print(\"Hello World\")</div>",
+        logic: "💡 <b>Logic Trick:</b> Computer tab tak kuch nahi bolta jab tak tum <code>print()</code> command na do. Dhyan rakhna: <code>print</code> chote aksharo me hi likhna hai!",
+        task: "👇 <b>Tumhara Task:</b> Niche editor me Python code likh kar screen par <b>Hello Python</b> print karwao.",
+        starter: "# Niche apna code likho:\n", hint: "print(\"Hello Python\")", expectedOut: "Hello Python" },
+    2: { mod: "Module 1: Basics", type: "CODE WRITING ✍️", title: "Level 2: Variables (Data ka Dabba)",
+        lesson: "Program me data yaad rakhne ke liye hum <b>Variable</b> banate hain. Jaise Maths me <code>x = 10</code> hota hai.<div class='code-example'>umar = 25\nprint(umar)</div>Dhyan do: Jab variable ko print karte hain, tab quotes NAHI lagate!",
+        logic: "💡 <b>Logic Trick:</b> Agar <code>print(\"umar\")</code> likhoge toh screen par shabd 'umar' छपेगा. Par <code>print(umar)</code> likhoge toh uske andar ki value छपेगी!",
+        task: "👇 <b>Tumhara Task:</b> Ek variable <code>score = 500</code> banao, aur agle line me <code>print(score)</code> karke uski value dikhao.",
+        starter: "score = \n", hint: "score = 500\nprint(score)", expectedOut: "500" },
+    3: { mod: "Module 1: Basics", type: "CODE WRITING ✍️", title: "Level 3: Text (String) vs Numbers (Int)",
+        lesson: "Python me Text ko <b>String (str)</b> kehte hain aur Numbers ko <b>Integer (int)</b>.<div class='code-example'>naam = \"Aman\"  # String\nage = 18       # Integer\nprint(naam)\nprint(age)</div>",
+        logic: "💡 <b>Logic Trick:</b> Numbers par hum Maths kar sakte hain, isliye unpar quotes nahi lagte. Text par quotes lagana zaroori hai.",
+        task: "👇 <b>Tumhara Task:</b> Ek variable <code>city = \"Delhi\"</code> banao aur usko <code>print(city)</code> karo.",
+        starter: "", hint: "city = \"Delhi\"\nprint(city)", expectedOut: "Delhi" },
+    4: { mod: "Module 1: Basics", type: "CODE WRITING ✍️", title: "Level 4: Variable ki Value Badalna",
+        lesson: "Python code ko upar se niche padhta hai. Agar hum variable me nayi value daal dein, toh purani value mit jati hai!<div class='code-example'>x = 10\nx = 20\nprint(x) # Output: 20</div>",
+        logic: "💡 <b>Logic Trick:</b> Socho ek dabba hai jisme pehle 10, fir 10 nikal kar 20 rakh diya. Ab dabbe me kya bacha? 20!",
+        task: "👇 <b>Tumhara Task:</b> <code>coins = 50</code> diya hai. Agli line me <code>coins = 100</code> karo aur fir <code>print(coins)</code> karo.",
+        starter: "coins = 50\n# Yahan coins ko 100 karo:\n", hint: "coins = 100\nprint(coins)", expectedOut: "100" },
+    5: { mod: "Module 1: BOSS 👹", type: "BOSS EXAM 👹 (No Hints!)", title: "👹 BOSS LEVEL 5: Python Basics Test",
+        lesson: "🔥 <b>TOPIC 1 COMPLETE!</b> Ab dekhte hain tumne kitna seekha. Is Boss Test ko pass karne par hi <b>Module 2</b> khulega!",
+        logic: "⚠️ <b>Warning:</b> Galat code likhne par Heart ❤️ kam hoga. Dhyan se likho!",
+        task: "👇 <b>BOSS CHALLENGE:</b> \n1. <code>hero = \"IronMan\"</code> banao\n2. <code>power = 99</code> banao\n3. Pehle <code>print(hero)</code>, fir <code>print(power)</code>",
+        starter: "# Boss Test Code:\n", hint: "No hints in Boss!", expectedOut: "IronMan\n99", isBoss: true },
+    6: { mod: "Module 2: Maths", type: "CODE WRITING ✍️", title: "Level 6: Variables ke sath Calculation",
+        lesson: "Ab variables ke andar Maths karke naya logic banayenge!<div class='code-example'>price = 40\nqty = 3\ntotal = price * qty\nprint(total) # 120</div>(Guna karne ke liye <code>*</code> lagate hain).",
+        logic: "💡 <b>Logic:</b> Bill nikalna ho toh socho kaunse 2 numbers multiply ya plus karne hain, aur result ko teesre variable me daal do!",
+        task: "👇 <b>Tumhara Task:</b> <code>a = 15</code>, <code>b = 4</code> diya hai. <code>ans = a * b</code> banao aur <code>print(ans)</code> karo.",
+        starter: "a = 15\nb = 4\n", hint: "ans = a * b\nprint(ans)", expectedOut: "60" },
+    7: { mod: "Module 2: Maths", type: "CODE WRITING ✍️", title: "Level 7: Modulus (%) — Sabse Important!",
+        lesson: "Coding me <code>%</code> ka matlab 'Percentage' NAHI hota! Iska matlab hai <b>Remainder</b>.<div class='code-example'>print(10 % 3) # 3*3=9, bacha 1\nprint(8 % 2)  # 0 (pura bhaag gaya)</div>",
+        logic: "💡 <b>Logic Trick (Even/Odd):</b> <code>% 2</code> karne par <code>0</code> aaye → Even! <code>1</code> aaye → Odd!",
+        task: "👇 <b>Tumhara Task:</b> <code>print(17 % 5)</code> likho aur remainder dekho.",
+        starter: "", hint: "print(17 % 5)", expectedOut: "2" },
+    8: { mod: "Module 2: Maths", type: "CODE WRITING ✍️", title: "Level 8: Comparison Logic (True/False)",
+        lesson: "Comparison operators se sawal puchte hain: <code>></code>, <code><</code>, <code>==</code>.<div class='code-example'>print(10 > 5)  # True\nprint(5 == 8)  # False</div>",
+        logic: "💡 <b>Sabse Badi Galti:</b> Ek <code>=</code> value save karta hai. Do <code>==</code> check karte hain barabari!",
+        task: "👇 <b>Tumhara Task:</b> <code>print(50 == 50)</code> likh kar dekho kya aata hai.",
+        starter: "", hint: "print(50 == 50)", expectedOut: "True" },
+    9: { mod: "Module 2: Maths", type: "CODE WRITING ✍️", title: "Level 9: Score Increment (Game Logic)",
+        lesson: "Jab player coin leta hai, score badh jata hai. Iska logic:<div class='code-example'>score = 10\nscore = score + 5\nprint(score) # 15</div>",
+        logic: "💡 <b>Logic:</b> <code>score = score + 5</code> = Purane score me 5 jodo, wapas save kar do!",
+        task: "👇 <b>Tumhara Task:</b> <code>hp = 100</code> diya hai. <code>hp = hp + 25</code> karo aur <code>print(hp)</code>.",
+        starter: "hp = 100\n", hint: "hp = hp + 25\nprint(hp)", expectedOut: "125" },
+    10: { mod: "Module 2: BOSS 👹", type: "BOSS EXAM 👹", title: "👹 BOSS LEVEL 10: Logic & Maths Test",
+        lesson: "🔥 <b>Module 2 Complete!</b> Is Boss Test me Maths aur Logic dono lagana hai.",
+        logic: "Pehle dono items ka total nikalo, fir discount ghatao (-).",
+        task: "👇 <b>BOSS:</b> <code>item1 = 200</code>, <code>item2 = 300</code>. Dono ko jod kar <code>50</code> kam karo aur print karo (Output 450).",
+        starter: "item1 = 200\nitem2 = 300\n# Apna logic:\n", hint: "No hints!", expectedOut: "450", isBoss: true },
+    11: { mod: "Module 3: If / Else", type: "CODE WRITING ✍️", title: "Level 11: If Statement",
+        lesson: "Shart lagane ke liye <code>if</code> use hota hai.<div class='code-example'>age = 20\nif age > 18:\n    print(\"Adult\")</div>⚠️ Colon <code>:</code> lagao aur agli line me 4 space do!",
+        logic: "💡 <b>Logic:</b> Condition <code>True</code> hogi tabhi andar wala print chalega!",
+        task: "👇 <b>Tumhara Task:</b> Agar <code>marks > 33</code> ho toh <b>Pass</b> print ho.",
+        starter: "marks = 80\nif marks > 33:\n    ", hint: "4 space dekar: print(\"Pass\")", expectedOut: "Pass" }
+};
+
+function getLevelData(lvl) {
+    if (CORE_LEVELS[lvl]) return CORE_LEVELS[lvl];
+    let modObj = SYLLABUS.find(m => lvl >= m.range[0] && lvl <= m.range[1]) || SYLLABUS[SYLLABUS.length - 1];
+    let isBoss = (lvl % 5 === 0);
+    let topicIndex = (lvl - 1) % modObj.topics.length;
+    let topicName = modObj.topics[topicIndex] || "Practice";
+    let n1 = (lvl * 3) % 20 + 2;
+    let n2 = (lvl * 7) % 10 + 2;
+    if (isBoss) {
+        let expected = (n1 * n2) + 10;
+        return {
+            mod: modObj.title, type: "BOSS EXAM 👹",
+            title: `👹 BOSS ${lvl}: ${topicName} Exam`,
+            lesson: `🔥 <b>Boss Test!</b> Bina hint ke yeh logic solve karo.`,
+            logic: `💡 <b>Boss Logic:</b> <code>a * b</code> karo, fir <code>+ 10</code> karke print karo!`,
+            task: `👇 <b>BOSS:</b> <code>a = ${n1}</code>, <code>b = ${n2}</code>. Formula <code>(a * b) + 10</code> print karo.`,
+            starter: `a = ${n1}\nb = ${n2}\n# Boss Solution:\n`,
+            hint: "No hints!", expectedOut: String(expected), isBoss: true
+        };
+    } else {
+        let expected = n1 + n2;
+        return {
+            mod: modObj.title, type: "CODE & LOGIC ✍️",
+            title: `Level ${lvl}: ${topicName}`,
+            lesson: `Is level me <b>${modObj.title}</b> → <b>${topicName}</b> ka logic pakka karenge.<div class='code-example'>x = ${n1}\ny = ${n2}\nres = x + y\nprint(res)</div>`,
+            logic: `💡 <b>Logic:</b> Do variables ko jodkar result print karwana algorithm ka base hai.`,
+            task: `👇 <code>x = ${n1}</code>, <code>y = ${n2}</code>. Dono ko plus karke print karo.`,
+            starter: `x = ${n1}\ny = ${n2}\n# Print sum:\n`,
+            hint: `print(x + y)`, expectedOut: String(expected), isBoss: false
+        };
+    }
+}
+
+function executePythonSimulator(code) {
+    let lines = code.split('\n');
+    let vars = {}, outputs = [], skipNext = false;
+    try {
+        for (let i = 0; i < lines.length; i++) {
+            let rawLine = lines[i];
+            let line = rawLine.trim();
+            if (!line || line.startsWith('#')) continue;
+            if (skipNext && (rawLine.startsWith('    ') || rawLine.startsWith('\t'))) continue;
+            skipNext = false;
+            if (line.startsWith('if ') && line.endsWith(':')) {
+                let cond = line.slice(3, -1).trim();
+                if (!evalExpr(cond, vars)) skipNext = true;
+                continue;
+            }
+            if (line.startsWith('print(') && line.endsWith(')')) {
+                let inner = line.slice(6, -1).trim();
+                let parts = splitArgs(inner);
+                outputs.push(parts.map(p => evalExpr(p, vars)).join(' '));
+                continue;
+            }
+            if (line.includes('=') && !line.includes('==')) {
+                let eqIdx = line.indexOf('=');
+                vars[line.slice(0, eqIdx).trim()] = evalExpr(line.slice(eqIdx + 1).trim(), vars);
+                continue;
+            }
+            throw new Error("Syntax Error: " + line);
+        }
+        return { success: true, output: outputs.join('\n') };
+    } catch (err) {
+        return { success: false, output: "⚠️ Python Error: " + err.message };
+    }
+}
+
+function splitArgs(str) {
+    let res = [], curr = '', inQ = false;
+    for (let ch of str) {
+        if (ch === '"' || ch === "'") inQ = !inQ;
+        if (ch === ',' && !inQ) { res.push(curr.trim()); curr = ''; }
+        else curr += ch;
+    }
+    if (curr) res.push(curr.trim());
+    return res;
+}
+
+function evalExpr(expr, vars) {
+    expr = expr.trim();
+    if ((expr.startsWith('"') && expr.endsWith('"')) || (expr.startsWith("'") && expr.endsWith("'"))) return expr.slice(1, -1);
+    let jsExpr = expr.replace(/\b[a-zA-Z_]\w*\b/g, (m) => {
+        if (m === 'True') return 'true';
+        if (m === 'False') return 'false';
+        if (Object.prototype.hasOwnProperty.call(vars, m)) return typeof vars[m] === 'string' ? JSON.stringify(vars[m]) : vars[m];
+        throw new Error(`'${m}' not defined`);
+    });
+    let val = Function('"use strict"; return (' + jsExpr + ')')();
+    if (val === true) return "True";
+    if (val === false) return "False";
+    return val;
+}
+
+const DEFAULT_STATE = { unlocked: 1, xp: 0, hearts: 5, currentLvl: 1 };
+let state = (() => {
+    try { return Object.assign({}, DEFAULT_STATE, JSON.parse(localStorage.getItem('pymaster_state') || '{}')); }
+    catch (e) { return { ...DEFAULT_STATE }; }
+})();
+
+function saveState() {
+    try { localStorage.setItem('pymaster_state', JSON.stringify(state)); } catch (e) {}
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
+    set('ui-hearts', state.hearts);
+    set('ui-xp', state.xp);
+    set('ui-lvl', state.unlocked);
+    set('m-hearts', state.hearts);
+    set('m-xp', state.xp);
+}
+
+function switchTab(tab) {
+    document.querySelectorAll('[data-tab]').forEach(el => {
+        el.classList.toggle('active', el.dataset.tab === tab);
+    });
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    const view = document.getElementById('view-' + tab);
+    if (view) view.classList.add('active');
+    if (tab === 'syllabus') renderSyllabus();
+    else if (tab === 'map') renderMap(Math.floor(((state.unlocked || 1) - 1) / 100));
+    else if (tab === 'play') loadLevel(state.currentLvl || 1);
+}
+
+document.querySelectorAll('[data-tab]').forEach(el => {
+    el.addEventListener('click', () => switchTab(el.dataset.tab));
+});
+
+function renderSyllabus() {
+    const box = document.getElementById('syllabus-container');
+    box.innerHTML = '';
+    SYLLABUS.forEach((mod, idx) => {
+        const [start, end] = mod.range;
+        const total = end - start + 1;
+        const done = Math.max(0, Math.min(total, state.unlocked - start));
+        const pct = Math.round((done / total) * 100);
+        let badgeClass = 'badge-lock', badgeText = '🔒 Locked', cardClass = 'locked';
+        if (state.unlocked > end) { badgeClass = 'badge-done'; badgeText = '✅ Done'; cardClass = 'completed'; }
+        else if (state.unlocked >= start) { badgeClass = 'badge-active'; badgeText = '🔥 Active'; cardClass = ''; }
+        const isFeatured = idx === 0;
+        const icon = MODULE_ICONS[idx] || '📚';
+        const topicsHtml = mod.topics.map(t => `<span class="topic-tag">${t}</span>`).join('');
+        box.innerHTML += `
+            <div class="module-card glass-card ${cardClass} ${isFeatured ? 'featured' : ''}">
+                <div class="mod-top">
+                    <div class="mod-icon">${icon}</div>
+                    <span class="badge ${badgeClass}">${badgeText}</span>
+                </div>
+                <div class="mod-title">${mod.title}</div>
+                <div class="mod-meta">Levels ${start}–${end}</div>
+                <p class="mod-desc">${mod.desc}</p>
+                <div class="topics">${topicsHtml}</div>
+                <div class="progress"><div class="progress-fill" style="width:${pct}%"></div></div>
+                <div class="mod-footer">
+                    <span class="mod-progress-text">${pct}% · ${done}/${total}</span>
+                    ${state.unlocked >= start ? `<button class="btn-pill" onclick="startModule(${start})">Play →</button>` : ''}
+                </div>
+            </div>`;
+    });
+}
+
+function startModule(lvl) {
+    state.currentLvl = Math.min(state.unlocked, lvl);
+    saveState();
+    switchTab('play');
+}
+
+function initPageSelect() {
+    const sel = document.getElementById('page-select');
+    sel.innerHTML = '';
+    for (let i = 0; i < 20; i++) {
+        const s = i * 100 + 1, e = (i + 1) * 100;
+        sel.innerHTML += `<option value="${i}">Levels ${s} – ${e}</option>`;
+    }
+}
+
+function renderMap(pageIndex) {
+    pageIndex = Number(pageIndex) || 0;
+    document.getElementById('page-select').value = pageIndex;
+    const grid = document.getElementById('level-grid');
+    grid.innerHTML = '';
+    const start = pageIndex * 100 + 1;
+    const end = start + 99;
+    for (let i = start; i <= end; i++) {
+        const isBoss = (i % 5 === 0);
+        const btn = document.createElement('button');
+        btn.className = 'level-orb';
+        if (i < state.unlocked) {
+            btn.className += isBoss ? ' done boss' : ' done';
+            btn.innerHTML = `${i}<span class="sub">${isBoss ? '👹 Pass' : '✓'}</span>`;
+            btn.onclick = () => { state.currentLvl = i; saveState(); switchTab('play'); };
+        } else if (i === state.unlocked) {
+            btn.className += isBoss ? ' boss current' : ' current';
+            btn.innerHTML = `${i}<span class="sub">${isBoss ? 'BOSS' : 'PLAY'}</span>`;
+            btn.onclick = () => { state.currentLvl = i; saveState(); switchTab('play'); };
+        } else {
+            btn.className += ' locked';
+            btn.innerHTML = `${i}<span class="sub">${isBoss ? '👹' : '🔒'}</span>`;
+            btn.onclick = () => alert("Pehle pichle levels aur Boss Test pass karo bhai!");
+        }
+        grid.appendChild(btn);
+    }
+}
+
+function escapeHtml(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function loadLevel(lvl) {
+    lvl = Math.max(1, Math.min(2000, Number(lvl) || 1));
+    state.currentLvl = lvl;
+    saveState();
+    const data = getLevelData(lvl);
+    const playContent = document.getElementById('play-content');
+    playContent.innerHTML = `
+        <div class="play-header">
+            <span class="play-badge">${data.mod}</span>
+            <span class="play-type">${data.type}</span>
+        </div>
+        <h1 class="play-title">${data.title}</h1>
+        <div class="play-layout">
+            <div class="play-side">
+                <div class="glass-card lesson-card">${data.lesson}</div>
+                <div class="glass-card logic-card">${data.logic}</div>
+            </div>
+            <div class="play-side">
+                <div class="glass-card task-card">
+                    <p class="task-text">${data.task}</p>
+                    <div class="editor">
+                        <div class="editor-header">
+                            <span>✍️ solution.py</span>
+                            <span>Expected: <b>${escapeHtml(data.expectedOut).replace(/\n/g, ' | ')}</b></span>
+                        </div>
+                        <textarea id="user-code" class="code-input" placeholder="# Apna code likho...">${escapeHtml(data.starter)}</textarea>
+                        <div class="terminal-output" id="code-out">Terminal Output...</div>
+                    </div>
+                    <div class="btn-row">
+                        <button class="btn btn-primary" onclick="verifyCode(${lvl})">▶ Run & Check</button>
+                        ${!data.isBoss ? `<button class="btn btn-secondary" onclick="showHint(${lvl})">💡 Hint</button>` : ''}
+                    </div>
+                </div>
+            </div>
+        </div>`;
+}
+
+function showHint(lvl) {
+    const data = getLevelData(lvl);
+    const outBox = document.getElementById('code-out');
+    if (!outBox) return;
+    outBox.style.color = 'var(--amber)';
+    outBox.innerText = "💡 HINT:\n" + data.hint;
+}
+
+function verifyCode(lvl) {
+    const data = getLevelData(lvl);
+    const userCodeEl = document.getElementById('user-code');
+    const outBox = document.getElementById('code-out');
+    if (!userCodeEl || !outBox) return;
+    const userCode = userCodeEl.value;
+    const res = executePythonSimulator(userCode);
+    outBox.style.color = 'var(--amber)';
+    outBox.innerText = "Output:\n" + res.output;
+    if (res.success && res.output.trim() === data.expectedOut.trim()) {
+        if (!userCode.includes('print(')) {
+            outBox.style.color = '#fb7185';
+            outBox.innerText = "⚠️ Output sahi par print() use nahi kiya!";
+            return;
+        }
+        const xpGain = data.isBoss ? 50 : 15;
+        state.xp += xpGain;
+        if (lvl === state.unlocked && state.unlocked < 2000) state.unlocked++;
+        saveState();
+        showModal(
+            data.isBoss ? "👑" : "🎉",
+            data.isBoss ? "BOSS CLEARED!" : "Sahi Code!",
+            `Tumhara logic 100% sahi hai!\nOutput: "${res.output}"\n\n+${xpGain} XP Earned!`,
+            () => loadLevel(state.unlocked)
+        );
+    } else {
+        state.hearts = Math.max(1, state.hearts - 1);
+        saveState();
+        outBox.style.color = "#fb7185";
+        outBox.innerText = `❌ Match nahi hua!\nTumhara: "${res.output}"\nChahiye tha: "${data.expectedOut}"\n\n(Lesson dhyan se padho!)`;
+    }
+}
+
+function runSandbox() {
+    const code = document.getElementById('sandbox-code').value;
+    const res = executePythonSimulator(code);
+    const out = document.getElementById('sandbox-out');
+    out.style.color = res.success ? 'var(--emerald)' : '#fb7185';
+    out.innerText = res.output;
+}
+
+function showModal(icon, title, desc, callback) {
+    document.getElementById('m-icon').innerText = icon;
+    document.getElementById('m-title').innerText = title;
+    document.getElementById('m-desc').innerText = desc;
+    document.getElementById('modal').classList.add('show');
+    window.modalCb = callback;
+}
+
+function closeModal() {
+    document.getElementById('modal').classList.remove('show');
+    if (window.modalCb) { const cb = window.modalCb; window.modalCb = null; cb(); }
+}
+
+function downloadApp() {
+    try {
+        const html = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+        const blob = new Blob([html], { type: "text/html" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "PyMaster_Pro_App.html";
+        a.click();
+    } catch (e) { alert("Download failed: " + e.message); }
+}
+
+initPageSelect();
+saveState();
+renderSyllabus();
+</script>
+</body>
+</html>
